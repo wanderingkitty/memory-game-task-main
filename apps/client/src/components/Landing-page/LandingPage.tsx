@@ -1,6 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import './LandingPage.css'
 
 export default function LandingPage() {
+	const navigate = useNavigate();
+
+	const handlePlay = () => {
+		navigate('/board-page')
+	}
+
 	return (
 		<div className="main-layout">
 			<section className="log-in-page">
@@ -20,8 +27,7 @@ export default function LandingPage() {
 					<button>8x6</button>
 					<button>10x6</button>
 				</div>
-
-				<button className="play-btn">Play</button>
+				<button onClick={handlePlay} className="play-btn">Play</button>
 			</section>
 
 			<section className="leaderboard">
