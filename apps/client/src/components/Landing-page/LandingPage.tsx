@@ -1,19 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import './LandingPage.css'
+import { useState } from "react";
+import './LandingPage.css';
 
 export default function LandingPage() {
 	const navigate = useNavigate();
+	const [boardSize, setBoardSize] = useState({ rows: 6, columns: 6 });
 
 	const handlePlay = () => {
-		navigate('/board-page')
-	}
+		navigate('/board-page', { state: boardSize });
+	};
+
+	const handleSize = (rows: number, columns: number) => {
+		setBoardSize({ rows, columns });
+	};
+
+	const isSelected = (rows: number, columns: number) => {
+		return boardSize.rows === rows && boardSize.columns === columns;
+	};
 
 	return (
 		<div className="main-layout">
 			<section className="log-in-page">
-				<h1>Mystic card escape</h1>
+				<h1 className="title">Mystic card escape</h1>
 				<p className="description">
-					Welcome, brave witch. Trapped deep within a cursed dungeon, your only hope for escape lies in the mystic board before you. Solve its riddles, unlock its secrets, and earn your freedom before the darkness consumes all.
+					Welcome, brave witch. Trapped deep within a cursed dungeon, your only
+					hope for escape lies in the mystic board before you. Solve its riddles,
+					unlock its secrets, and earn your freedom before the darkness consumes all.
 				</p>
 
 				<form>
@@ -21,12 +33,31 @@ export default function LandingPage() {
 					<input id="username" type="text" placeholder="Enter username" />
 				</form>
 
-				<h2 style={{ textAlign: 'center', color: '#ffb347' }}>Grid</h2>
+				<h2 className="grid-title">Grid</h2>
 				<div className="grid-buttons">
-					<button>6x6</button>
-					<button>8x6</button>
-					<button>10x6</button>
+					<button
+						className={isSelected(6, 6) ? 'selected' : ''}
+						onClick={() => handleSize(6, 6)}
+						type="button"
+					>
+						6x6
+					</button>
+					<button
+						className={isSelected(8, 6) ? 'selected' : ''}
+						onClick={() => handleSize(8, 6)}
+						type="button"
+					>
+						8x6
+					</button>
+					<button
+						className={isSelected(10, 6) ? 'selected' : ''}
+						onClick={() => handleSize(10, 6)}
+						type="button"
+					>
+						10x6
+					</button>
 				</div>
+
 				<button onClick={handlePlay} className="play-btn">Play</button>
 			</section>
 

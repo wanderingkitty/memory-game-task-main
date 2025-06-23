@@ -8,10 +8,10 @@ body {
 
 .main-layout {
   display: grid;
-  grid-template-columns: repeat(2, 0.2fr);
+  grid-template-columns: repeat(2, 0.3fr);
   align-items: center;
   justify-content: space-evenly;
-  margin: auto;
+  margin: 5em;
 }
 
 .log-in-page {
@@ -83,6 +83,14 @@ input {
   transform: scale(1.05);
 }
 
+.grid-buttons button.selected {
+  background-color: #39ff14;
+  color: #0a0f0d;
+  font-weight: bold;
+  box-shadow: 0 0 10px #39ff14;
+  transform: scale(1.05);
+}
+
 .play-btn {
   padding: 10px 16px;
   margin: 3em;
@@ -111,7 +119,7 @@ input {
   padding: 2rem;
   background-color: #1f1b2e;
   max-width: 350px;
-  margin-top: 15em;
+  margin-top: 16em;
 }
 
 .score-board table {

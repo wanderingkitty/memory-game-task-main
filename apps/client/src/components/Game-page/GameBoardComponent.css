@@ -21,27 +21,49 @@ body {
 }
 
 .stat-block > h3 {
-  color: #b76eff;
+  color: #8e44ad;
   margin-bottom: 0.5rem;
 }
 
 .stat-block > div {
-  border: 1px solid #39ff14;
+  border: 1px solid #6c5ce7;
   padding: 1em 2em;
-  background-color: #1f1b2e;
+  background-color: #dfe6e9;
   border-radius: 8px;
   font-weight: bold;
-  color: #39ff14;
-  box-shadow: 0 0 10px #39ff14;
+  color: #2c3e50;
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.3);
 }
 
 .card-board {
-  align-items: center;
-  border: 2px solid #b76eff;
-  background-color: #141017;
-  height: 500px;
-  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 2px solid #6c5ce7;
+  background-color: #ffffff;
   margin: 3rem auto;
-  box-shadow: 0 0 20px #b76eff66;
+  box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
   border-radius: 12px;
+  padding: 3.5px;
+}
+
+.card-row {
+  display: flex;
+  margin-bottom: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 2px;
+}
+
+.card-cell {
+  background-color: #a29bfe;
+  border: 1px solid #6c5ce7;
+  border-radius: 4px;
+  box-shadow: 0 0 4px rgba(108, 92, 231, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.card-cell:hover {
+  background-color: #9ef78f;
 }
