@@ -4,16 +4,22 @@
   "description": "Npm Workspace for Memory Game",
   "scripts": {
     "client": "npm run dev -w client",
-    "server": "npm run dev -w server"
+    "server": "npm run dev -w server",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
+  "homepage": "https://wanderingkitty.github.io/memory-game-task-main",
   "workspaces": [
     "apps/*"
   ],
   "dependencies": {
     "react-router-dom": "^7.6.2"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }

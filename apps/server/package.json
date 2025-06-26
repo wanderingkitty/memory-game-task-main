@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "homepage": "https://wanderingkitty.github.io/memory-game-task-main",
   "scripts": {
     "build": "node esbuild.config.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [],
   "author": "",

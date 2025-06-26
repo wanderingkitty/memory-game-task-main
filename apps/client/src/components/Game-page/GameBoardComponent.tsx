@@ -47,7 +47,7 @@ export default function GameBoardComponent() {
 	const [hasStarted, setHasStarted] = useState(false);
 	const [flippedCards, setFlippedCards] = useState<GameCard[]>([]);
 	const [score, setScore] = useState(0);
-	const [username, setUserName] = useState('');
+	const [username] = useState('');
 	const [gameEnded, setGameEnded] = useState(false);
 
 	const rows = state?.rows ?? 6;
@@ -123,10 +123,25 @@ export default function GameBoardComponent() {
 			}
 			setFlippedCards([]);
 
-			const allMatched = cards.every(card => card.isMatched)
+			const allMatched = cards.every(card => card.isMatched ||
+				card.id === first.id || card.id === second.id);
+
+			if (allMatched) {
+				// ⏱️ Сохраняем результат в leaderboard
+				fetch("http://localhost:3000/api/high-scores", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						player: username,
+						guesses: moves,
+						timeTakeInSeconds: 60 - time
+					})
+				});
+			}
 		}
 	}, [flippedCards]);
-
 
 	const handleCardClick = (id: number) => {
 		if (!hasStarted) {
