@@ -26,6 +26,13 @@
       "guesses": 102,
       "timeTakeInSeconds": 60,
       "score": 300
+    },
+    {
+      "id": "716f5024-91a7-45af-b778-eab87d1e788f",
+      "player": "smot",
+      "guesses": 94,
+      "timeTakeInSeconds": 60,
+      "score": 700
     }
   ]
 }

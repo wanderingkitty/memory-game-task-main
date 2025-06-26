@@ -1,23 +1,29 @@
+// React and routing imports
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback, useRef } from "react";
+
+// Styles and components
 import './GameBoardComponent.css';
 import type { GameCard } from "../../models/CardInterfase";
 import CardComponent from "./Cards/CardComponent";
 import { allIcons } from "../../data/icons";
 import ScoreComponent from "../Score-component/ScoreComponent";
 
+// Define structure of the router state that comes from the previous screen
 interface LocationState {
 	rows: number;
 	columns: number;
 	username: string;
 }
 
+// Utility function: converts seconds to "MM:SS" format
 function formatTime(seconds: number) {
 	const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
 	const secs = (seconds % 60).toString().padStart(2, '0');
 	return `${mins}:${secs}`;
 }
 
+// Generates a shuffled array of cards based on number of cards needed
 function generateShuffledCards(count: number): GameCard[] {
 	const neededPairs = Math.ceil(count / 2);
 	const icons = allIcons.slice(0, neededPairs);
@@ -30,40 +36,45 @@ function generateShuffledCards(count: number): GameCard[] {
 		deck.push(card1, card2);
 	});
 
+	// Shuffle and trim to the desired number of cards
 	return deck
 		.sort(() => Math.random() - 0.5)
 		.slice(0, count);
 }
 
 export default function GameBoardComponent() {
+	// Get state passed via router
 	const location = useLocation();
 	const navigate = useNavigate();
 	const state = location.state as LocationState | undefined;
+
+	// Game state
 	const [username] = useState(state?.username ?? '');
 	const [moves, setMoves] = useState(0);
 	const [isRunning, setIsRunning] = useState(false);
-	const [time, setTime] = useState(60);
+	const [time, setTime] = useState(60); // seconds countdown
 	const [currentTime, setCurrentTime] = useState('01:00');
 	const [hasStarted, setHasStarted] = useState(false);
 	const [flippedCards, setFlippedCards] = useState<GameCard[]>([]);
 	const [score, setScore] = useState(0);
 	const [gameEnded, setGameEnded] = useState(false);
 
+	// Board setup
 	const rows = state?.rows ?? 6;
 	const cols = state?.columns ?? 6;
 	const totalCards = rows * cols;
-
 	const [cards, setCards] = useState<GameCard[]>(generateShuffledCards(totalCards));
 
 	const maxBoardSize = 560;
 	const cellSize = Math.floor(maxBoardSize / Math.max(rows, cols));
 	const boardWidth = cols * cellSize;
 
-	// Refs for state consistency
+	// Refs to ensure only one save per game
 	const hasSavedResult = useRef(false);
 	const scoreRef = useRef(score);
 	const movesRef = useRef(moves);
 
+	// Keep refs up-to-date with actual state
 	useEffect(() => {
 		scoreRef.current = score;
 	}, [score]);
@@ -72,6 +83,7 @@ export default function GameBoardComponent() {
 		movesRef.current = moves;
 	}, [moves]);
 
+	// Function to save the result to backend (or localStorage during testing)
 	const saveGameResult = useCallback(async (
 		reason: 'victory' | 'timeout',
 		currentScore: number,
@@ -100,14 +112,16 @@ export default function GameBoardComponent() {
 				})
 			});
 		} catch (error) {
-			console.error('Ошибка сохранения результата:', error);
+			console.error('Failed to save result:', error);
 		}
 	}, [username]);
 
+	// Format and update display time
 	useEffect(() => {
 		setCurrentTime(formatTime(time));
 	}, [time]);
 
+	// Game timer logic (ticks every second)
 	useEffect(() => {
 		if (!isRunning || gameEnded) return;
 
@@ -126,6 +140,7 @@ export default function GameBoardComponent() {
 		return () => clearInterval(interval);
 	}, [isRunning, gameEnded, saveGameResult]);
 
+	// Check for matched pairs and handle game logic
 	useEffect(() => {
 		if (flippedCards.length === 2) {
 			const [first, second] = flippedCards;
@@ -135,6 +150,7 @@ export default function GameBoardComponent() {
 				newScore = score + 50;
 				setScore(newScore);
 
+				// Mark matched cards
 				setCards(prevCards =>
 					prevCards.map(card =>
 						card.id === first.id || card.id === second.id
@@ -143,6 +159,7 @@ export default function GameBoardComponent() {
 					)
 				);
 
+				// Check for win condition
 				const allMatched = cards.every(card =>
 					card.isMatched || card.id === first.id || card.id === second.id
 				);
@@ -154,6 +171,7 @@ export default function GameBoardComponent() {
 					}, 100);
 				}
 			} else {
+				// Flip back if not matched
 				setTimeout(() => {
 					setCards(prevCards =>
 						prevCards.map(card =>
@@ -164,10 +182,13 @@ export default function GameBoardComponent() {
 					);
 				}, 600);
 			}
+
+			// Reset flipped state
 			setFlippedCards([]);
 		}
 	}, [flippedCards, cards, score, time, saveGameResult]);
 
+	// Handle user clicking a card
 	const handleCardClick = (id: number) => {
 		if (!hasStarted) {
 			setHasStarted(true);
@@ -182,6 +203,7 @@ export default function GameBoardComponent() {
 		setFlippedCards(current => [...current, clickedCard]);
 		setMoves(prev => prev + 1);
 
+		// Flip the clicked card
 		setCards(prev =>
 			prev.map(card =>
 				card.id === id ? { ...card, isFlipped: true } : card
@@ -189,6 +211,7 @@ export default function GameBoardComponent() {
 		);
 	};
 
+	// Render the board with rows and columns
 	const board = [];
 	for (let i = 0; i < rows; i++) {
 		const row = [];
@@ -208,10 +231,12 @@ export default function GameBoardComponent() {
 		board.push(<div className="card-row" key={i}>{row}</div>);
 	}
 
+	// Navigate back to main menu
 	const handleNavigateToMain = () => {
 		navigate('/', { state: { shouldRefresh: true } });
 	};
 
+	// Final render
 	return (
 		<>
 			<button onClick={handleNavigateToMain} className="back-btn">Back to menu</button>

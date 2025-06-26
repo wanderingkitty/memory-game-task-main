@@ -32,17 +32,17 @@ export default function LandingPage() {
 			const response = await fetch('http://localhost:3000/api/high-scores');
 			const data = await response.json();
 
-			// Сортируем по очкам (убывание) и времени (возрастание)
+			// Score sorting
 			const sortedData = data.sort((a: HighScore, b: HighScore) => {
 				if (b.score !== a.score) {
-					return b.score - a.score; // Больше очков = лучше
+					return b.score - a.score;
 				}
-				return a.timeTakeInSeconds - b.timeTakeInSeconds; // Меньше времени = лучше
+				return a.timeTakeInSeconds - b.timeTakeInSeconds;
 			});
 
-			setLeaderboard(sortedData.slice(0, 10)); // Топ 10
+			setLeaderboard(sortedData.slice(0, 10));
 		} catch (error) {
-			console.error('Ошибка загрузки лидерборда:', error);
+			console.error('Loading leaderboard error:', error);
 		} finally {
 			setLoading(false);
 		}
