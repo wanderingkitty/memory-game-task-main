@@ -47,8 +47,8 @@ export default function GameBoardComponent() {
 	const [hasStarted, setHasStarted] = useState(false);
 	const [flippedCards, setFlippedCards] = useState<GameCard[]>([]);
 	const [score, setScore] = useState(0);
-	const [isChecking, setIsChecking] = useState(false);
-
+	const [username, setUserName] = useState('');
+	const [gameEnded, setGameEnded] = useState(false);
 
 	const rows = state?.rows ?? 6;
 	const cols = state?.columns ?? 6;
@@ -72,14 +72,29 @@ export default function GameBoardComponent() {
 				if (prev <= 1) {
 					clearInterval(interval);
 					setIsRunning(false);
+					setGameEnded(true);
+
+					fetch("http://localhost:3000/api/high-scores", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							player: username,
+							guesses: moves,
+							score: score,
+							timeTakeInSeconds: 60
+						})
+					});
 					return 0;
+
 				}
 				return prev - 1;
 			});
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, [isRunning]);
+	}, [isRunning, gameEnded]);
 
 	useEffect(() => {
 		if (flippedCards.length === 2) {
@@ -107,6 +122,8 @@ export default function GameBoardComponent() {
 				}, 600);
 			}
 			setFlippedCards([]);
+
+			const allMatched = cards.every(card => card.isMatched)
 		}
 	}, [flippedCards]);
 
@@ -116,6 +133,7 @@ export default function GameBoardComponent() {
 			setHasStarted(true);
 			setIsRunning(true);
 		}
+		if (gameEnded) return;
 
 		// Найди карту по id
 		const clickedCard = cards.find(card => card.id === id);
@@ -177,13 +195,18 @@ export default function GameBoardComponent() {
 					score={score}
 				/>
 			</section>
-
-			<section
-				className="card-board"
-				style={{ width: boardWidth }}
-			>
-				{board}
-			</section>
+			{gameEnded ? (
+				<p style={{ textAlign: "center", color: "#39ff14", fontSize: "1.2em" }}>
+					🎉 The game is over!
+				</p>
+			) : (
+				<section
+					className="card-board"
+					style={{ width: boardWidth }}
+				>
+					{board}
+				</section>
+			)}
 		</>
 	);
 }
