@@ -5,6 +5,27 @@
       "player": "Dewald",
       "guesses": 12,
       "timeTakeInSeconds": 60
+    },
+    {
+      "id": "54ee719f-7d31-4669-b148-d26ad769e146",
+      "player": "kotik",
+      "guesses": 112,
+      "timeTakeInSeconds": 60,
+      "score": 450
+    },
+    {
+      "id": "e2656ae1-4ae4-4423-9b29-2e5a0090c7d4",
+      "player": "busia",
+      "guesses": 100,
+      "timeTakeInSeconds": 60,
+      "score": 350
+    },
+    {
+      "id": "5faf268b-18cb-4021-8734-4afb6ad507d9",
+      "player": "alina",
+      "guesses": 102,
+      "timeTakeInSeconds": 60,
+      "score": 300
     }
   ]
 }

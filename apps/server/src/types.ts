@@ -5,6 +5,7 @@ export interface HighScore {
   player: string;
   guesses: number;
   timeTakeInSeconds: number;
+  score: number;
 }
 
 export type HighScorePostRequestBody = Omit<HighScore, "id">;

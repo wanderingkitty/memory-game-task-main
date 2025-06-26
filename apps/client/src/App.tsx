@@ -4,7 +4,7 @@ import GameBoardComponent from './components/Game-page/GameBoardComponent';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/memory-game-task-main">
       <div className="app-container">
         <Routes>
           <Route path="/" element={<LandingPage />} />

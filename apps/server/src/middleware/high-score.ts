@@ -6,7 +6,7 @@ export async function validateHighScoreSubmission(
   res: express.Response,
   next: express.NextFunction
 ) {
-  const { player, guesses, timeTakeInSeconds } = req.body;
+  const { player, guesses, timeTakeInSeconds, score } = req.body;
 
   const errors: string[] = [];
 
@@ -16,6 +16,10 @@ export async function validateHighScoreSubmission(
 
   if (typeof guesses !== "number" || isNaN(guesses)) {
     errors.push("guesses must be a valid number");
+  }
+
+  if (typeof score !== "number" || isNaN(score)) {
+    errors.push("score must be a valid number");
   }
 
   if (typeof timeTakeInSeconds !== "number" || isNaN(timeTakeInSeconds)) {

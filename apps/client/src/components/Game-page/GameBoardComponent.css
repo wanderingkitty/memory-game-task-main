@@ -84,6 +84,11 @@ body {
   .card-board {
     width: 350px !important;
   }
+
+  .card {
+    height: 50px !important;
+  }
+
   .game-layout {
     margin-top: 0;
   }

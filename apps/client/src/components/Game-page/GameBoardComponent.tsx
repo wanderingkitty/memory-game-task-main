@@ -1,6 +1,5 @@
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback, useRef } from "react";
 import './GameBoardComponent.css';
 import type { GameCard } from "../../models/CardInterfase";
 import CardComponent from "./Cards/CardComponent";
@@ -10,6 +9,7 @@ import ScoreComponent from "../Score-component/ScoreComponent";
 interface LocationState {
 	rows: number;
 	columns: number;
+	username: string;
 }
 
 function formatTime(seconds: number) {
@@ -39,7 +39,7 @@ export default function GameBoardComponent() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const state = location.state as LocationState | undefined;
-
+	const [username] = useState(state?.username ?? '');
 	const [moves, setMoves] = useState(0);
 	const [isRunning, setIsRunning] = useState(false);
 	const [time, setTime] = useState(60);
@@ -47,7 +47,6 @@ export default function GameBoardComponent() {
 	const [hasStarted, setHasStarted] = useState(false);
 	const [flippedCards, setFlippedCards] = useState<GameCard[]>([]);
 	const [score, setScore] = useState(0);
-	const [username] = useState('');
 	const [gameEnded, setGameEnded] = useState(false);
 
 	const rows = state?.rows ?? 6;
@@ -60,56 +59,100 @@ export default function GameBoardComponent() {
 	const cellSize = Math.floor(maxBoardSize / Math.max(rows, cols));
 	const boardWidth = cols * cellSize;
 
+	// Refs for state consistency
+	const hasSavedResult = useRef(false);
+	const scoreRef = useRef(score);
+	const movesRef = useRef(moves);
+
+	useEffect(() => {
+		scoreRef.current = score;
+	}, [score]);
+
+	useEffect(() => {
+		movesRef.current = moves;
+	}, [moves]);
+
+	const saveGameResult = useCallback(async (
+		reason: 'victory' | 'timeout',
+		currentScore: number,
+		currentMoves: number,
+		currentTime: number
+	) => {
+		if (hasSavedResult.current) return;
+		hasSavedResult.current = true;
+		setGameEnded(true);
+
+		const finalTime = reason === 'timeout' ? 60 : (60 - currentTime);
+		const finalScore = currentScore;
+		const finalMoves = currentMoves;
+
+		try {
+			await fetch("http://localhost:3000/api/high-scores", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					player: username,
+					guesses: finalMoves,
+					score: finalScore,
+					timeTakeInSeconds: finalTime
+				})
+			});
+		} catch (error) {
+			console.error('Ошибка сохранения результата:', error);
+		}
+	}, [username]);
+
 	useEffect(() => {
 		setCurrentTime(formatTime(time));
 	}, [time]);
 
 	useEffect(() => {
-		if (!isRunning) return;
+		if (!isRunning || gameEnded) return;
 
 		const interval = setInterval(() => {
 			setTime(prev => {
 				if (prev <= 1) {
 					clearInterval(interval);
 					setIsRunning(false);
-					setGameEnded(true);
-
-					fetch("http://localhost:3000/api/high-scores", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							player: username,
-							guesses: moves,
-							score: score,
-							timeTakeInSeconds: 60
-						})
-					});
+					saveGameResult('timeout', scoreRef.current, movesRef.current, 0);
 					return 0;
-
 				}
 				return prev - 1;
 			});
 		}, 1000);
 
 		return () => clearInterval(interval);
-	}, [isRunning, gameEnded]);
+	}, [isRunning, gameEnded, saveGameResult]);
 
 	useEffect(() => {
 		if (flippedCards.length === 2) {
 			const [first, second] = flippedCards;
+			let newScore = score;
 
 			if (first.icon === second.icon) {
-				setScore(prev => prev + 50)
+				newScore = score + 50;
+				setScore(newScore);
+
 				setCards(prevCards =>
 					prevCards.map(card =>
 						card.id === first.id || card.id === second.id
 							? { ...card, isMatched: true }
 							: card
 					)
-				)
+				);
 
+				const allMatched = cards.every(card =>
+					card.isMatched || card.id === first.id || card.id === second.id
+				);
+
+				if (allMatched) {
+					setIsRunning(false);
+					setTimeout(() => {
+						saveGameResult('victory', newScore, movesRef.current, time);
+					}, 100);
+				}
 			} else {
 				setTimeout(() => {
 					setCards(prevCards =>
@@ -122,26 +165,8 @@ export default function GameBoardComponent() {
 				}, 600);
 			}
 			setFlippedCards([]);
-
-			const allMatched = cards.every(card => card.isMatched ||
-				card.id === first.id || card.id === second.id);
-
-			if (allMatched) {
-				// ⏱️ Сохраняем результат в leaderboard
-				fetch("http://localhost:3000/api/high-scores", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						player: username,
-						guesses: moves,
-						timeTakeInSeconds: 60 - time
-					})
-				});
-			}
 		}
-	}, [flippedCards]);
+	}, [flippedCards, cards, score, time, saveGameResult]);
 
 	const handleCardClick = (id: number) => {
 		if (!hasStarted) {
@@ -150,26 +175,17 @@ export default function GameBoardComponent() {
 		}
 		if (gameEnded) return;
 
-		// Найди карту по id
 		const clickedCard = cards.find(card => card.id === id);
+		if (!clickedCard || clickedCard.isFlipped || clickedCard.isMatched) return;
+		if (flippedCards.length >= 2) return;
 
-		// ⛔ Если уже открыта или уже подобрана — ничего не делай
-		if (!clickedCard || clickedCard.isFlipped || clickedCard.isMatched) {
-			return;
-		}
 		setFlippedCards(current => [...current, clickedCard]);
-
-		// ✅ Увеличиваем ходы только если карта еще не открыта
 		setMoves(prev => prev + 1);
 
-		// Переворачиваем карту
 		setCards(prev =>
-			prev.map(card => {
-				if (card.id === id) {
-					return { ...card, isFlipped: true };
-				}
-				return card;
-			})
+			prev.map(card =>
+				card.id === id ? { ...card, isFlipped: true } : card
+			)
 		);
 	};
 
@@ -189,16 +205,13 @@ export default function GameBoardComponent() {
 				/>
 			);
 		}
-		board.push(
-			<div className="card-row" key={i}>
-				{row}
-			</div>
-		);
+		board.push(<div className="card-row" key={i}>{row}</div>);
 	}
 
 	const handleNavigateToMain = () => {
-		navigate('/')
-	}
+		navigate('/', { state: { shouldRefresh: true } });
+	};
+
 	return (
 		<>
 			<button onClick={handleNavigateToMain} className="back-btn">Back to menu</button>
@@ -212,7 +225,7 @@ export default function GameBoardComponent() {
 			</section>
 			{gameEnded ? (
 				<p style={{ textAlign: "center", color: "#39ff14", fontSize: "1.2em" }}>
-					🎉 The game is over!
+					The game is over!
 				</p>
 			) : (
 				<section

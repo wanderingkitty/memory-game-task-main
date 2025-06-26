@@ -36,21 +36,28 @@ interface Database {
     validateHighScoreSubmission,
     async (req: HighScoreRequest, res: express.Response) => {
       const { body } = req;
-      const { player = "", guesses = 0, timeTakeInSeconds = 0 } = body;
+      const {
+        player = "",
+        guesses = 0,
+        timeTakeInSeconds = 0,
+        score = 0,
+      } = body;
       const id = crypto.randomUUID();
-      const score: HighScore = {
+
+      const newScore: HighScore = {
         id,
         player,
         guesses,
         timeTakeInSeconds,
+        score,
       };
 
       try {
         // Update db.
-        db.data.scores.push(score);
+        db.data.scores.push(newScore);
         await db.write();
 
-        res.status(201).json(score);
+        res.status(201).json(newScore);
       } catch (error) {
         res.status(500).json({
           error: "Unable to save score",
