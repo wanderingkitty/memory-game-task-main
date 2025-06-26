@@ -6,14 +6,6 @@ body {
   padding: 0;
 }
 
-.info-stats {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
 .stat-block {
   display: flex;
   flex-direction: column;
@@ -41,18 +33,16 @@ body {
   justify-content: center;
   border: 2px solid #6c5ce7;
   background-color: #ffffff;
-  margin: 3rem auto;
+  margin: auto;
   box-shadow: 0 0 20px rgba(108, 92, 231, 0.3);
   border-radius: 12px;
-  padding: 3.5px;
+  padding: 4px;
 }
 
 .card-row {
   display: flex;
-  margin-bottom: 2px;
-  margin-left: 2px;
-  margin-right: 2px;
-  margin-top: 2px;
+  gap: 0.25em;
+  margin-bottom: 0.2em;
 }
 
 .card-cell {
@@ -66,4 +56,43 @@ body {
 
 .card-cell:hover {
   background-color: #9ef78f;
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn {
+  background: #39ff14;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2em;
+  padding: 10px;
+  align-items: flex-start;
+  margin: 2em 2em auto;
+}
+
+.back-btn:hover {
+  background-color: #9ef78f;
+  transform: scale(1.05);
+}
+@media (max-width: 798px) {
+  .card-board {
+    width: 350px !important;
+  }
+  .game-layout {
+    margin-top: 0;
+  }
+  h1,
+  h3 {
+    margin-top: 0;
+  }
+
+  .back-btn {
+    font-size: 0.7em;
+  }
 }

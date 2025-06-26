@@ -111,6 +111,18 @@ input {
   transform: scale(1.05);
 }
 
+.play-btn.disabled {
+  opacity: 0.5;
+  pointer-events: auto;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #c52233;
+  font-size: 1.2rem;
+  margin-top: 4px;
+}
+
 .leaderboard {
   align-self: flex-start;
   flex: 1;
@@ -149,4 +161,19 @@ input {
 
 .score-board tbody > tr:hover {
   background-color: #292541;
+}
+
+@media (max-width: 1024px) {
+}
+
+@media (max-width: 798px) {
+  .main-layout {
+    display: grid;
+    grid-template-columns: repeat(1, 0.3fr);
+    margin: auto;
+  }
+  .leaderboard {
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
 }

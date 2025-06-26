@@ -1,0 +1,23 @@
+.start-btn {
+  font-weight: bold;
+  font-size: 1.4em;
+  width: 120px;
+  height: 55px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  margin-top: 2.4em;
+}
+
+.start-btn:hover {
+  background-color: #b2fba5;
+  transform: scale(1.05);
+}
+
+.info-stats {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 1em;
+}

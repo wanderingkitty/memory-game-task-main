@@ -1,0 +1,29 @@
+.card {
+  background-color: #dfe6e9;
+  border: 1px solid #6c5ce7;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-back {
+  width: 100%;
+  height: 100%;
+  background-color: #6c5ce7;
+}
+
+.card-back:hover {
+  background-color: #9ef78f;
+}
+
+@media (max-width: 798px) {
+}
