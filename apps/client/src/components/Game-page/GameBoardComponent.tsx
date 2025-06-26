@@ -87,7 +87,7 @@ export default function GameBoardComponent() {
 		const finalMoves = currentMoves;
 
 		try {
-			await fetch("https://memory-api-kwcn.onrender.com", {
+			await fetch("http://localhost:3000/api/high-scores", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
