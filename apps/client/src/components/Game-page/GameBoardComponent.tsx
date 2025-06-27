@@ -52,7 +52,7 @@ export default function GameBoardComponent() {
 	const [username] = useState(state?.username ?? '');
 	const [moves, setMoves] = useState(0);
 	const [isRunning, setIsRunning] = useState(false);
-	const [time, setTime] = useState(60); // seconds countdown
+	const [time, setTime] = useState(60);
 	const [currentTime, setCurrentTime] = useState('01:00');
 	const [hasStarted, setHasStarted] = useState(false);
 	const [flippedCards, setFlippedCards] = useState<GameCard[]>([]);
@@ -236,7 +236,6 @@ export default function GameBoardComponent() {
 		navigate('/', { state: { shouldRefresh: true } });
 	};
 
-	// Final render
 	return (
 		<>
 			<button onClick={handleNavigateToMain} className="back-btn">Back to menu</button>

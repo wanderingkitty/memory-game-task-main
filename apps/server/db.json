@@ -33,6 +33,13 @@
       "guesses": 94,
       "timeTakeInSeconds": 60,
       "score": 700
+    },
+    {
+      "id": "ca1ba0eb-7597-412b-a984-88b8274c707c",
+      "player": "glist",
+      "guesses": 69,
+      "timeTakeInSeconds": 60,
+      "score": 300
     }
   ]
 }
